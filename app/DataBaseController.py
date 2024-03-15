@@ -60,7 +60,13 @@ class Database():
         self.__engine: Engine = create_engine(DB, echo=False)
         self.session = Session(self.__engine)
 
-    def insert(self, table, **values):
+    def insert(self, table, **values) -> bool:
+        """
+
+        :param table: T<> для таблиц
+        :param values: поля Т<> = значение
+        :return: bool # успех транзакции
+        """
         try:
 
             self.session.execute(insert(table).values(**values))
@@ -71,7 +77,14 @@ class Database():
             self.session.rollback()
             return False
 
-    def update(self, table, filter, **values):
+    def update(self, table, filter: list[bool], **values):
+        """
+
+        :param table: T<> для таблиц
+        :param filter: лист T<>.value = value
+        :param values: поля Т<> = значение
+        :return: bool # успех транзакции
+        """
         try:
 
             self.session.execute(update(table).where(*filter).values(**values))
@@ -81,7 +94,15 @@ class Database():
             self.session.rollback()
             return False
 
-    def select(self, table, filter=(True,), count=False, one=False):
+    def select(self, table, filter=[True], count=False, one=False):
+        """
+
+        :param table: T<>
+        :param filter: лист T<>.value = value
+        :param count: флаг для вывода колва
+        :param one:  вернуть певый
+        :return:
+        """
         if count:
             return self.session.query(table).filter(*filter).count()
         else:
@@ -89,8 +110,12 @@ class Database():
                 *filter).all()
 
     def delete(self, table, filter: list):
-        try:
+        """
 
+                :param table: T<> для таблиц
+                :param filter: лист T<>.value = value
+        """
+        try:
             self.session.query(table).filter(*filter).delete()
             self.session.commit()
             return True
